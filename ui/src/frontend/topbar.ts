@@ -25,6 +25,8 @@ import {Button} from '../widgets/button';
 import {Intent} from '../widgets/common';
 import {Popup, PopupPosition} from '../widgets/popup';
 import {Omnibox} from './omnibox';
+import {OWNER_ATTRIBUTE} from '../base/owner_attribute';
+import {CORE_OWNER} from '../core/ownership';
 
 class TraceErrorIcon implements m.ClassComponent<TraceImplAttrs> {
   private tracePopupErrorDismissed = false;
@@ -107,6 +109,7 @@ export class Topbar implements m.ClassComponent<TopbarAttrs> {
     return m(
       '.pf-topbar',
       {
+        [OWNER_ATTRIBUTE]: CORE_OWNER,
         className: classNames(
           !app.sidebar.visible && 'pf-topbar--hide-sidebar',
         ),
