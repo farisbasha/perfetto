@@ -19,6 +19,8 @@ import {MenuItem, PopupMenu} from '../../widgets/menu';
 import {DrawerPanel, type DrawerTab} from '../../widgets/drawer_panel';
 import {DEFAULT_DETAILS_CONTENT_HEIGHT} from '../../frontend/css_constants';
 import {CurrentSelectionTab} from './current_selection_tab';
+import {withOwner} from '../../base/owner_attribute';
+import {getOwner} from '../../core/ownership';
 
 export interface TabPanelAttrs {
   readonly trace: TraceImpl;
@@ -41,12 +43,19 @@ export class TabPanel implements m.ClassComponent<TabPanelAttrs> {
         content: m(CurrentSelectionTab, {trace: attrs.trace}),
       },
       // Dynamic tabs from tab manager
-      ...tabMan.resolveTabs(tabMan.openTabsUri).map(({uri, tab}) => ({
-        key: uri,
-        title: tab?.content.getTitle() ?? 'Tab does not exist',
-        content: tab?.content.render(),
-        closable: true,
-      })),
+      ...tabMan.resolveTabs(tabMan.openTabsUri).map(({uri, tab}) => {
+        // Label the title and content the plugin provides with its owner.
+        const owner = tab && getOwner(tab);
+        return {
+          key: uri,
+          title: withOwner(
+            owner,
+            tab?.content.getTitle() ?? 'Tab does not exist',
+          ),
+          content: withOwner(owner, tab?.content.render()),
+          closable: true,
+        };
+      }),
     ];
 
     return m(DrawerPanel, {
